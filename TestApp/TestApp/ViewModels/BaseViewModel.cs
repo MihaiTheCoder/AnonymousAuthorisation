@@ -12,6 +12,7 @@ namespace TestApp.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
+        public const string ServerUrl = "";
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>() ?? new MockDataStore();
 
         bool isBusy = false;
