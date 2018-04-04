@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BlindChatCore.Certificate
 {
-    public class RNGRandomGenerator : IRandomGenerator
+    public class RNGRandomGenerator : IRandomGenerator, ISimpleRandomGenerator
     {
         private readonly RNGCryptoServiceProvider rndProv;
 
@@ -45,6 +45,26 @@ namespace BlindChatCore.Certificate
                 byte[] tmpBuf = new byte[len];
                 rndProv.GetBytes(tmpBuf);
                 Array.Copy(tmpBuf, 0, bytes, start, len);
+            }
+        }
+
+        public int Next(int min, int max)
+        {
+            if (min > max) throw new ArgumentOutOfRangeException(nameof(min));
+            if (min == max) return min;
+
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                byte[] data = new byte[4];
+                rng.GetBytes(data);
+
+                int generatedValue = Math.Abs(BitConverter.ToInt32(data, startIndex: 0));
+
+                int diff = max - min;
+                int mod = generatedValue % diff;
+                int normalizedNumber = min + mod;
+
+                return normalizedNumber;
             }
         }
     }
