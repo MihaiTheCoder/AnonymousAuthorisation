@@ -14,6 +14,12 @@ namespace BlindChatCore
         Group GetGroup(Guid groupId);
         List<Participant> GetParticipants();
         Participant GetParticipant(int invitationCode);
-        void SetBlindedCertificate(int iD, string blindedCertificate);
+        void SetBlindedCertificate(int participantId, Guid groupId, string blindedCertificate);
+        void MarkParticipantEmailUsed(int iD);
+        List<MessageToSign> GetBlindCertificatesToSign(Guid groupId);
+        void SaveSignedCertificates(Guid groupId, List<SignedMessage> signedMessages);
+        SignedMessage GetSignedMessage(Guid groupId, string email);
+        void SaveMessage(VerifiedParticipant participant, ParticipantMessage message);
+        Group GetGroupForInvitationCode(int invitationCode);
     }
 }

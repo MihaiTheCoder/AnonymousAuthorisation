@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using BlindindScheme.SignatureRequester;
+using BlindindScheme;
 
 namespace BlindChatCore
 {
@@ -11,12 +13,14 @@ namespace BlindChatCore
         private readonly IGroupRepository groupRepository;
         private readonly IEmailSender emailSender;
         private readonly ISimpleRandomGenerator simpleRandomGenerator;
+        private readonly ISignatureVerifier signatureVerifier;
 
-        public APIServer(IGroupRepository groupRepository, IEmailSender emailSender, ISimpleRandomGenerator simpleRandomGenerator)
+        public APIServer(IGroupRepository groupRepository, IEmailSender emailSender, ISimpleRandomGenerator simpleRandomGenerator, ISignatureVerifier signatureVerifier)
         {
             this.groupRepository = groupRepository;
             this.emailSender = emailSender;
             this.simpleRandomGenerator = simpleRandomGenerator;
+            this.signatureVerifier = signatureVerifier;
         }
         public List<ParticipantStatus> AddParticipantsToGroup(List<string> emails, int confirmationCode)
         {
@@ -80,9 +84,47 @@ namespace BlindChatCore
         {
             Participant participant = groupRepository.GetParticipant(invitationCode);
 
-            groupRepository.SetBlindedCertificate(participant.ID, blindedCertificate);
+            groupRepository.SetBlindedCertificate(participant.ID, participant.GroupId, blindedCertificate);            
 
-            //notify Group Owner
+            groupRepository.MarkParticipantEmailUsed(participant.ID);
+        }
+
+        public List<MessageToSign> GetMessagesToSign(Guid groupId)
+        {
+            return groupRepository.GetBlindCertificatesToSign(groupId);
+        }
+
+        public void SaveSignedMessages(Guid groupId, List<SignedMessage> signedMessages)
+        {
+            groupRepository.SaveSignedCertificates(groupId, signedMessages);
+        }
+
+        public SignedMessage GetSignedMessage(Guid groupId, string email)
+        {
+            return groupRepository.GetSignedMessage(groupId, email);
+        }
+
+        public void AddMessage(Guid groupId, ParticipantMessage message, VerifiedParticipant participant)
+        {
+            var groupDetails = groupRepository.GetGroup(groupId);
+
+            SignedEntity signedEntity = new SignedEntity(FromBase64String(participant.PublicKey), FromBase64String(participant.Signature));
+
+            bool isVerified = signatureVerifier.Verify(signedEntity, groupDetails.RsaPublicKey);
+
+            if (isVerified)
+                groupRepository.SaveMessage(participant, message);
+        }
+
+        byte[] FromBase64String(string message)
+        {
+            return Convert.FromBase64CharArray(message.ToCharArray(), 0, message.Length);            
+        }
+
+        public Group GetGroup(int invitationCode)
+        {
+            Group group = groupRepository.GetGroupForInvitationCode(invitationCode);
+            return group;
         }
     }
 }
