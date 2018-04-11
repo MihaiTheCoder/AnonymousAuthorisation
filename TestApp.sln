@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp.Android", "TestApp\TestApp.Android\TestApp.Android.csproj", "{F7B0BB36-6696-420C-A303-8DD41CA755F7}"
 EndProject
@@ -11,13 +11,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp.UWP", "TestApp\Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "TestApp\TestApp\TestApp.csproj", "{12E97681-5EB1-43F2-A537-D1ED2C1985C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "TestServer\TestServer.csproj", "{1FFE113A-9F21-4A5F-AAF5-C340522F563E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestServer", "TestServer\TestServer.csproj", "{1FFE113A-9F21-4A5F-AAF5-C340522F563E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlindindScheme", "BlindindScheme\BlindindScheme.csproj", "{1F1C4834-0296-4E69-8BBB-889E59AC2323}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlindindScheme", "BlindindScheme\BlindindScheme.csproj", "{1F1C4834-0296-4E69-8BBB-889E59AC2323}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlindChatCore", "BlindChatCore\BlindChatCore.csproj", "{BE77E1F3-A281-4EB2-BFF1-AABC0ACCC889}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlindChatCore", "BlindChatCore\BlindChatCore.csproj", "{BE77E1F3-A281-4EB2-BFF1-AABC0ACCC889}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{7F4D4A83-61D1-4A99-8D3A-CCA3AFD7AF72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{7F4D4A83-61D1-4A99-8D3A-CCA3AFD7AF72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlindChat.Infrastructure", "BlindChat.Infrastructure\BlindChat.Infrastructure.csproj", "{8F160B9E-7841-42E0-89D3-575D88AD41BD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -451,6 +453,54 @@ Global
 		{7F4D4A83-61D1-4A99-8D3A-CCA3AFD7AF72}.Release|x64.Build.0 = Release|Any CPU
 		{7F4D4A83-61D1-4A99-8D3A-CCA3AFD7AF72}.Release|x86.ActiveCfg = Release|Any CPU
 		{7F4D4A83-61D1-4A99-8D3A-CCA3AFD7AF72}.Release|x86.Build.0 = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|Any CPU.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|ARM.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|ARM.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|x64.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|x64.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|x86.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Ad-Hoc|x86.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|Any CPU.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|ARM.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|ARM.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|x64.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|x64.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.AppStore|x86.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|ARM.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|x64.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Debug|x86.Build.0 = Debug|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|ARM.Build.0 = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|iPhone.Build.0 = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|x64.ActiveCfg = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|x64.Build.0 = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|x86.ActiveCfg = Release|Any CPU
+		{8F160B9E-7841-42E0-89D3-575D88AD41BD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
