@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BlindChatCore
+namespace BlindChatCore.Model
 {
     public interface IAPIServer
     {

@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Crypto.Digests;
+﻿using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Signers;
@@ -10,7 +11,7 @@ namespace BlindindScheme
 {
     public class SignatureVerifier : ISignatureVerifier
     {
-        public bool Verify(ISignedEntity signedEntity, RsaKeyParameters publicKey)
+        public bool Verify(ISignedEntity signedEntity, AsymmetricKeyParameter publicKey)
         {
             byte[] content = signedEntity.GetSignedContent();
 

@@ -1,94 +1,201 @@
-﻿using System;
+﻿using BlindChatCore.Model;
+using BlindChat.Infrastructure.Repository;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
-namespace BlindChatCore.Server
+namespace BlindChatCore.Model
 {
+
+
     public class GroupRepository : IGroupRepository
     {
-        public GroupRepository()
-        {
+        private readonly BlindChatDbContext context;
 
+        public GroupRepository(BlindChatDbContext dbContext)
+        {
+            this.context = dbContext;
         }
 
-        public void AddConfirmationCode(Guid id, int confirmationCode)
+        public void AddConfirmationCode(Guid groupId, int confirmationCode)
         {
-            throw new NotImplementedException();
+            var confirmCode = new ConfirmationCode { Code = confirmationCode, GroupId = groupId, IsDeleted = false};
+            context.ConfirmationCodes.Add(confirmCode);
+            context.SaveChanges();
         }
 
-        public void AddParticipant(string email, int invitationCode)
+        public void AddParticipant(string email, int invitationCode, Guid? groupId)
         {
-            throw new NotImplementedException();
+            var participant = new BlindChatCore.Model.Participant {
+                Email = email,
+                EmailIsAlreadyInvited = false,
+                EmailIsConfirmed = false,
+                InvitationCode = invitationCode,
+                GroupId = groupId
+            };
+            context.Participants.Add(participant);
+            context.SaveChanges();
         }
 
         public List<MessageToSign> GetBlindCertificatesToSign(Guid groupId)
         {
-            throw new NotImplementedException();
+            List<MessageToSign> list = new List<MessageToSign>();
+            var certificates = context.AuthenticationMessages.Where(c => c.GroupId == groupId && c.IsSigned == false);
+            var messageToSign = new MessageToSign();
+            foreach (var certificate in certificates)
+            {
+                messageToSign.Message = certificate.Message;
+                messageToSign.Email = certificate.Group.OwnerEmail;
+                list.Append(messageToSign);
+            }
+            return list;
         }
 
         public Group GetGroup(Guid groupId)
         {
-            throw new NotImplementedException();
+            var group = context.Groups.FirstOrDefault(g => g.Id == groupId);
+
+            return group;
         }
 
         public Group GetGroupForInvitationCode(int invitationCode)
         {
-            throw new NotImplementedException();
+            var participant = context.Participants.FirstOrDefault(p => p.InvitationCode == invitationCode);
+            var group = context.Groups.FirstOrDefault(g => g.Id == participant.GroupId);
+            
+            return group;
         }
 
         public Guid? GetGroupIdForConfirmationCode(int confirmationCode)
         {
-            throw new NotImplementedException();
+            var confCode = context.ConfirmationCodes.FirstOrDefault(c => c.Code == confirmationCode);
+
+            return confCode.GroupId;
         }
 
         public void GetGroupOwnerEmail(Guid groupId)
         {
-            throw new NotImplementedException();
+            var owner = context.Groups.FirstOrDefault(o => o.Id == groupId);
         }
 
-        public Participant GetParticipant(int invitationCode)
+        public Model.Participant GetParticipant(int invitationCode)
         {
-            throw new NotImplementedException();
+            var participant = context.Participants.FirstOrDefault(p => p.InvitationCode == invitationCode);
+
+            return participant;
         }
 
         public List<Participant> GetParticipants()
         {
-            throw new NotImplementedException();
+            List<Participant> list = new List<Participant>();
+            var participants = context.Participants;
+            foreach (var participant in participants)
+            {
+
+                list.Append(participant);
+            }
+            
+            return list;
         }
 
         public SignedMessage GetSignedMessage(Guid groupId, string email)
         {
-            throw new NotImplementedException();
+            var authMessage = context.AuthenticationMessages.FirstOrDefault(m => m.GroupId == groupId && m.Group.OwnerEmail == email);
+            var signedMessage = new SignedMessage();
+
+            signedMessage.Email = authMessage.Group.OwnerEmail;
+            signedMessage.Message = authMessage.Message;
+            signedMessage.Signature = authMessage.Signature;
+
+            return signedMessage;
         }
 
-        public void MarkParticipantEmailUsed(int iD)
+        public void MarkParticipantEmailUsed(int participantId)
         {
-            throw new NotImplementedException();
+            var participant = context.Participants.FirstOrDefault(p => p.Id == participantId);
+            if (participant != null)
+            {
+                participant.EmailIsConfirmed = true;
+                context.SaveChanges();
+            }
         }
 
         public void RemoveConfirmationCode(int confirmationCode)
         {
-            throw new NotImplementedException();
+            var confirmCode = context.ConfirmationCodes.FirstOrDefault(c => c.Code == confirmationCode);
+            if (confirmCode != null)
+            {
+                confirmCode.IsDeleted = true;
+                context.SaveChanges();
+            }
         }
 
-        public void SaveGroup(Group group)
+        public void SaveClientCertificate(VerifiedParticipant verifiedParticipant, Guid groupId, string email)
         {
-            throw new NotImplementedException();
+            var participant = new Participant
+            {
+                GroupId = groupId,
+                Email = email,
+                EmailIsAlreadyInvited = true,
+                EmailIsConfirmed = true,
+                PublicKey = verifiedParticipant.PublicKey,
+                Signature = verifiedParticipant.Signature
+            };
+            context.Participants.Add(participant);
+            context.SaveChanges();
+        }
+
+        public Group SaveGroup(Group group)
+        {
+            var newGroup = new Group
+            {
+                Id = Guid.NewGuid(),
+                Name = group.Name,
+                OwnerEmail = group.OwnerEmail,
+                RsaPublicKey = group.RsaPublicKey
+            };
+            context.Groups.Add(newGroup);
+            context.SaveChanges();
+
+            return newGroup;
         }
 
         public void SaveMessage(VerifiedParticipant participant, ParticipantMessage message)
         {
-            throw new NotImplementedException();
+            var participantdb = context.Participants.FirstOrDefault(p => p.PublicKey == participant.PublicKey && p.Signature == participant.Signature);
+            var conversationMessage = new ConversationMessage
+            {
+                GroupId = participantdb.GroupId,
+                Message = message.Message,
+                ParticipantId = participantdb.Id
+            };
+            context.ConversationMessages.Add(conversationMessage);
+            context.SaveChanges();
         }
 
         public void SaveSignedCertificates(Guid groupId, List<SignedMessage> signedMessages)
         {
-            throw new NotImplementedException();
+            var authMessage = new AuthenticationMessage();
+            foreach (var message in signedMessages)
+            {
+                authMessage.GroupId = groupId;
+                authMessage.Message = message.Message;
+                authMessage.Signature = message.Signature;
+            }
+            context.AuthenticationMessages.Add(authMessage);
+            context.SaveChanges();
         }
 
-        public void SetBlindedCertificate(int participantId, Guid groupId, string blindedCertificate)
+        public void SetBlindedCertificate(int participantId, Guid? groupId, string blindedCertificate)
         {
-            throw new NotImplementedException();
+            var blindCertificate = new AuthenticationMessage
+            {
+                Message = blindedCertificate,
+                GroupId = groupId,
+                ParticipantId = participantId,
+            };
+            context.AuthenticationMessages.Add(blindCertificate);
+            context.SaveChanges();
         }
     }
 }

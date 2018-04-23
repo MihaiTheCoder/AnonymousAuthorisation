@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BlindChatCore
+namespace BlindChatCore.Model
 {
     public class GroupCreator
     {

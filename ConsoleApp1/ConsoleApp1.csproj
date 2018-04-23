@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlindChat.Infrastructure\BlindChat.Infrastructure.csproj" />
     <ProjectReference Include="..\BlindChatCore\BlindChatCore.csproj" />
+    <ProjectReference Include="..\BlindindScheme\BlindindScheme.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BlindChatCore.Server.Model
+namespace BlindChatCore.Server
 {
-    public class Group
+    class GroupDetails
     {
-
     }
 }

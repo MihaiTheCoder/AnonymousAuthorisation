@@ -5,15 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BlindChatCore
+namespace BlindChatCore.Model
 {
     public class ClientParticipant
     {
         private readonly IAPIServer server;
 
-        public ClientParticipant(IAPIServer server)
+        private readonly IGroupRepository groupRepository;
+
+        public ClientParticipant(IAPIServer server, IGroupRepository groupRepository)
         {
             this.server = server;
+            this.groupRepository = groupRepository;
         }
 
         public GroupRegistration GetGroupRegistration(int invitationCode, RsaKeyParameters participantPublicKey)
@@ -22,9 +25,17 @@ namespace BlindChatCore
             return new GroupRegistration(group, new ContentBlinder(group.RsaPublicKey), participantPublicKey);
         }
 
+        public RsaKeyParameters GetGroupDetails(int invitationCode)
+        {
+            var participant = groupRepository.GetParticipant(invitationCode);
+            var group = groupRepository.GetGroup((Guid)participant.GroupId);
+
+            return group.RsaPublicKey;
+        }
+
         public void RegisterBlindCertificate(int invitationCode, GroupRegistration groupRegistration)
         {
-            server.RegisterBlindCertificate(GetBlindedPublickey(groupRegistration.ContentBlinder, groupRegistration.ParticipantPublicKey), invitationCode);            
+            server.RegisterBlindCertificate(GetBlindedPublickey(groupRegistration.ContentBlinder, groupRegistration.PublicKey), invitationCode);            
         }
 
         public VerifiedParticipant CheckVerifiedEntity(Group group, string email, GroupRegistration groupRegistration)
@@ -35,9 +46,14 @@ namespace BlindChatCore
                 return null;
 
             VerifiedParticipant verifiedParticipant = new VerifiedParticipant();
-            verifiedParticipant.PublicKey = RsaKeyUtils.GetSerializedPublicKey(groupRegistration.ParticipantPublicKey);
+            verifiedParticipant.PublicKey = RsaKeyUtils.GetSerializedPublicKey(groupRegistration.PublicKey);
             verifiedParticipant.Signature = GetSignature(groupRegistration, signedMessage);
             return verifiedParticipant;
+        }
+
+        public void AddClientCertificate(VerifiedParticipant verifiedParticipant, Group group, string email)
+        {
+            groupRepository.SaveClientCertificate(verifiedParticipant, group.Id, email);
         }
 
         public void AddMessage(Guid groupId, ParticipantMessage message, VerifiedParticipant participant)

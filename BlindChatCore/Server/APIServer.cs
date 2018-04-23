@@ -1,4 +1,5 @@
 ﻿using BlindChatCore.Certificate;
+using BlindChatCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Linq;
 using BlindindScheme.SignatureRequester;
 using BlindindScheme;
 
-namespace BlindChatCore
+namespace BlindChatCore.Model
 {
     public class APIServer : IAPIServer
     {
@@ -14,6 +15,7 @@ namespace BlindChatCore
         private readonly IEmailSender emailSender;
         private readonly ISimpleRandomGenerator simpleRandomGenerator;
         private readonly ISignatureVerifier signatureVerifier;
+        public Dictionary<int, Tuple<Guid?, string>> groupDetailDictionary = new Dictionary<int, Tuple<Guid?, string>>();
 
         public APIServer(IGroupRepository groupRepository, IEmailSender emailSender, ISimpleRandomGenerator simpleRandomGenerator, ISignatureVerifier signatureVerifier)
         {
@@ -38,9 +40,11 @@ namespace BlindChatCore
             foreach (var email in emails.Where(e => !emailsAlreadyInvited.Contains(e)))
             {
                 int invitationCode = GenerateConfirmationCode();
-                groupRepository.AddParticipant(email, invitationCode);
+                groupRepository.AddParticipant(email, invitationCode, groupId);
                 emailSender.SendInvitation(email, invitationCode);
                 participants.Add(new ParticipantStatus(email, true));
+                var tupleGE = new Tuple<Guid?, string>(groupId, email);
+                groupDetailDictionary.Add(invitationCode, tupleGE);
             }
             foreach (var email in emails.Where(e => emailsAlreadyInvited.Contains(e)))
             {
@@ -51,8 +55,8 @@ namespace BlindChatCore
 
         public void CreateGroup(Group group)
         {
-            groupRepository.SaveGroup(group);
-            SendConfirmationCode(group);
+            var newGroup = groupRepository.SaveGroup(group);
+            SendConfirmationCode(newGroup);
         }
 
         private int GenerateConfirmationCode()
@@ -84,9 +88,9 @@ namespace BlindChatCore
         {
             Participant participant = groupRepository.GetParticipant(invitationCode);
 
-            groupRepository.SetBlindedCertificate(participant.ID, participant.GroupId, blindedCertificate);            
+            groupRepository.SetBlindedCertificate(participant.Id, participant.GroupId, blindedCertificate);            
 
-            groupRepository.MarkParticipantEmailUsed(participant.ID);
+            groupRepository.MarkParticipantEmailUsed(participant.Id);
         }
 
         public List<MessageToSign> GetMessagesToSign(Guid groupId)
