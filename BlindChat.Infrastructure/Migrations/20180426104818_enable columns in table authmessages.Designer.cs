@@ -11,9 +11,10 @@ using System;
 namespace BlindChat.Infrastructure.Migrations
 {
     [DbContext(typeof(BlindChatDbContext))]
-    partial class BlindChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180426104818_enable columns in table authmessages")]
+    partial class enablecolumnsintableauthmessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,24 +45,6 @@ namespace BlindChat.Infrastructure.Migrations
                     b.ToTable("AuthenticationMessages");
                 });
 
-            modelBuilder.Entity("BlindChatCore.Model.BlindParticipant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<Guid?>("GroupId");
-
-                    b.Property<string>("PublicKey");
-
-                    b.Property<string>("Signature");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("BlindParticipants");
-                });
-
             modelBuilder.Entity("BlindChatCore.Model.ConfirmationCode", b =>
                 {
                     b.Property<int>("Id")
@@ -89,9 +72,13 @@ namespace BlindChat.Infrastructure.Migrations
 
                     b.Property<string>("Message");
 
+                    b.Property<int?>("ParticipantId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("ParticipantId");
 
                     b.ToTable("ConversationMessages");
                 });
@@ -125,6 +112,10 @@ namespace BlindChat.Infrastructure.Migrations
 
                     b.Property<int>("InvitationCode");
 
+                    b.Property<string>("PublicKey");
+
+                    b.Property<string>("Signature");
+
                     b.HasKey("Id");
 
                     b.HasIndex("GroupId");
@@ -143,13 +134,6 @@ namespace BlindChat.Infrastructure.Migrations
                         .HasForeignKey("ParticipantId");
                 });
 
-            modelBuilder.Entity("BlindChatCore.Model.BlindParticipant", b =>
-                {
-                    b.HasOne("BlindChatCore.Model.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId");
-                });
-
             modelBuilder.Entity("BlindChatCore.Model.ConfirmationCode", b =>
                 {
                     b.HasOne("BlindChatCore.Model.Group", "Group")
@@ -162,6 +146,10 @@ namespace BlindChat.Infrastructure.Migrations
                     b.HasOne("BlindChatCore.Model.Group", "Group")
                         .WithMany()
                         .HasForeignKey("GroupId");
+
+                    b.HasOne("BlindChatCore.Model.Participant", "Participant")
+                        .WithMany()
+                        .HasForeignKey("ParticipantId");
                 });
 
             modelBuilder.Entity("BlindChatCore.Model.Participant", b =>

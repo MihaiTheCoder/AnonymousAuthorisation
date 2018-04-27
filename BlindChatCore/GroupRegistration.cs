@@ -5,11 +5,11 @@ namespace BlindChatCore.Model
 {
     public class GroupRegistration
     {
-        public GroupRegistration(Group group, IContentBlinder contentBlinder, RsaKeyParameters publicKey)
+        public GroupRegistration(Group group, IContentBlinder contentBlinder, RsaKeyParameters participantPublicKey)
         {
             Group = group;
             ContentBlinder = contentBlinder;
-            PublicKey = publicKey;
+            PublicKey = participantPublicKey;
         }
 
         public Group Group { get; }

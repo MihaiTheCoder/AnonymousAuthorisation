@@ -6,8 +6,6 @@ using System.Linq;
 
 namespace BlindChatCore.Model
 {
-
-
     public class GroupRepository : IGroupRepository
     {
         private readonly BlindChatDbContext context;
@@ -28,7 +26,7 @@ namespace BlindChatCore.Model
         {
             var participant = new BlindChatCore.Model.Participant {
                 Email = email,
-                EmailIsAlreadyInvited = false,
+                EmailIsAlreadyInvited = true,
                 EmailIsConfirmed = false,
                 InvitationCode = invitationCode,
                 GroupId = groupId
@@ -40,13 +38,14 @@ namespace BlindChatCore.Model
         public List<MessageToSign> GetBlindCertificatesToSign(Guid groupId)
         {
             List<MessageToSign> list = new List<MessageToSign>();
-            var certificates = context.AuthenticationMessages.Where(c => c.GroupId == groupId && c.IsSigned == false);
+            var certificates = from auth in context.AuthenticationMessages where auth.GroupId == groupId && auth.IsSigned == null select auth;          
             var messageToSign = new MessageToSign();
             foreach (var certificate in certificates)
             {
                 messageToSign.Message = certificate.Message;
-                messageToSign.Email = certificate.Group.OwnerEmail;
-                list.Append(messageToSign);
+                var participant = context.Participants.FirstOrDefault(p => p.Id == certificate.ParticipantId);
+                messageToSign.Email = participant.Email;
+                list.Add(messageToSign);
             }
             return list;
         }
@@ -100,10 +99,11 @@ namespace BlindChatCore.Model
 
         public SignedMessage GetSignedMessage(Guid groupId, string email)
         {
-            var authMessage = context.AuthenticationMessages.FirstOrDefault(m => m.GroupId == groupId && m.Group.OwnerEmail == email);
+            var participant = context.Participants.FirstOrDefault(p => p.Email == email);
+            var authMessage = context.AuthenticationMessages.FirstOrDefault(m => m.GroupId == groupId && m.ParticipantId == participant.Id);
             var signedMessage = new SignedMessage();
 
-            signedMessage.Email = authMessage.Group.OwnerEmail;
+            signedMessage.Email = participant.Email;
             signedMessage.Message = authMessage.Message;
             signedMessage.Signature = authMessage.Signature;
 
@@ -132,16 +132,14 @@ namespace BlindChatCore.Model
 
         public void SaveClientCertificate(VerifiedParticipant verifiedParticipant, Guid groupId, string email)
         {
-            var participant = new Participant
+
+            var participant = context.Participants.FirstOrDefault(p => p.GroupId == groupId && p.Email == email);
+            
+            if (participant != null)
             {
-                GroupId = groupId,
-                Email = email,
-                EmailIsAlreadyInvited = true,
-                EmailIsConfirmed = true,
-                PublicKey = verifiedParticipant.PublicKey,
-                Signature = verifiedParticipant.Signature
-            };
-            context.Participants.Add(participant);
+                participant.EmailIsConfirmed = true;              
+            }
+            context.Participants.Update(participant);
             context.SaveChanges();
         }
 
@@ -162,12 +160,11 @@ namespace BlindChatCore.Model
 
         public void SaveMessage(VerifiedParticipant participant, ParticipantMessage message)
         {
-            var participantdb = context.Participants.FirstOrDefault(p => p.PublicKey == participant.PublicKey && p.Signature == participant.Signature);
+            var blindParticipant = context.BlindParticipants.FirstOrDefault(p => p.PublicKey == participant.PublicKey && p.Signature == participant.Signature);
             var conversationMessage = new ConversationMessage
             {
-                GroupId = participantdb.GroupId,
-                Message = message.Message,
-                ParticipantId = participantdb.Id
+                GroupId = blindParticipant.GroupId,
+                Message = message.Message
             };
             context.ConversationMessages.Add(conversationMessage);
             context.SaveChanges();
@@ -175,18 +172,18 @@ namespace BlindChatCore.Model
 
         public void SaveSignedCertificates(Guid groupId, List<SignedMessage> signedMessages)
         {
-            var authMessage = new AuthenticationMessage();
             foreach (var message in signedMessages)
             {
-                authMessage.GroupId = groupId;
-                authMessage.Message = message.Message;
+                var participant = context.Participants.FirstOrDefault(p => p.Email == message.Email);
+                var authMessage = context.AuthenticationMessages.FirstOrDefault(a => a.GroupId == groupId && a.ParticipantId == participant.Id);
+                authMessage.IsSigned = true;
                 authMessage.Signature = message.Signature;
-            }
-            context.AuthenticationMessages.Add(authMessage);
+                context.AuthenticationMessages.Update(authMessage);
+            }            
             context.SaveChanges();
         }
 
-        public void SetBlindedCertificate(int participantId, Guid? groupId, string blindedCertificate)
+        public void AddBlindedCertificate(int participantId, Guid? groupId, string blindedCertificate)
         {
             var blindCertificate = new AuthenticationMessage
             {
@@ -196,6 +193,58 @@ namespace BlindChatCore.Model
             };
             context.AuthenticationMessages.Add(blindCertificate);
             context.SaveChanges();
+        }
+
+        public bool HasBlindCertificate(int invitationCode)
+        {
+            var participant = context.Participants.FirstOrDefault(p => p.InvitationCode == invitationCode);
+            var authenticateMessage = context.AuthenticationMessages.FirstOrDefault(a => a.ParticipantId == participant.Id);
+            
+            if (authenticateMessage.Message != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public List<Participant> UnconfirmedParticipants()
+        {
+            List<Participant> list = new List<Participant>();
+            var participants = context.Participants.Where(p => p.EmailIsConfirmed == false);
+            foreach (var participant in participants)
+            {
+                list.Add(participant);
+            }
+            return list;
+        }
+
+        public void InsertBlindParticipant(Guid groupId, string publicKey, string signature)
+        {
+            var blindParticipant = new BlindParticipant
+            {
+                GroupId = groupId,
+                PublicKey = publicKey,
+                Signature = signature
+            };
+            context.BlindParticipants.Add(blindParticipant);
+            context.SaveChanges();
+        }
+
+        public List<VerifiedParticipant> GetBlindParticipants(Guid groupId)
+        {
+            List<VerifiedParticipant> list = new List<VerifiedParticipant>();
+            VerifiedParticipant verifiedParticipant = new VerifiedParticipant();
+            var blindparticipants = context.BlindParticipants.Where(b => b.GroupId == groupId).ToList();
+            foreach(var blindparticipant in blindparticipants)
+            {
+                verifiedParticipant.PublicKey = blindparticipant.PublicKey;
+                verifiedParticipant.Signature = blindparticipant.Signature;
+                list.Add(verifiedParticipant);
+            }
+            return list;
         }
     }
 }

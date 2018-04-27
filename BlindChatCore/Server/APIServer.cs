@@ -6,6 +6,7 @@ using System.Text;
 using System.Linq;
 using BlindindScheme.SignatureRequester;
 using BlindindScheme;
+using Org.BouncyCastle.Crypto;
 
 namespace BlindChatCore.Model
 {
@@ -88,7 +89,7 @@ namespace BlindChatCore.Model
         {
             Participant participant = groupRepository.GetParticipant(invitationCode);
 
-            groupRepository.SetBlindedCertificate(participant.Id, participant.GroupId, blindedCertificate);            
+            groupRepository.AddBlindedCertificate(participant.Id, participant.GroupId, blindedCertificate);            
 
             groupRepository.MarkParticipantEmailUsed(participant.Id);
         }
@@ -129,6 +130,26 @@ namespace BlindChatCore.Model
         {
             Group group = groupRepository.GetGroupForInvitationCode(invitationCode);
             return group;
+        }
+
+        public bool ReceiveBlindMessage(int invitationCode)
+        {
+            return groupRepository.HasBlindCertificate(invitationCode);
+        }
+
+        public List<Participant> GetParticipantsToConfirm()
+        {
+            return groupRepository.UnconfirmedParticipants();
+        }
+
+        public void AddNewBlindParticipant(Guid groupId, string publicKey, string signature)
+        {
+            groupRepository.InsertBlindParticipant(groupId, publicKey, signature);
+        }
+
+        public List<VerifiedParticipant> GetBlindParticipants(Guid groupId)
+        {
+            return groupRepository.GetBlindParticipants(groupId);
         }
     }
 }

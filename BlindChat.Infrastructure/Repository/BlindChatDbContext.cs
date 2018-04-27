@@ -15,6 +15,8 @@ namespace BlindChat.Infrastructure.Repository
 
         public DbSet<BlindChatCore.Model.ConversationMessage> ConversationMessages { get; set; }
 
+        public DbSet<BlindChatCore.Model.BlindParticipant> BlindParticipants { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(

@@ -16,15 +16,10 @@ namespace BlindChatCore.Model
         public bool EmailIsConfirmed { get; set; }
 
         public int InvitationCode { get; set; } 
-        
-        public string PublicKey { get; set; }
-
-        public string Signature { get; set; }
 
         [ForeignKey("GroupId")]
         public Guid? GroupId { get; set; }
 
         public virtual Group Group { get; set; }
-
     }
 }

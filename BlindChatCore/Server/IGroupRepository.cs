@@ -14,7 +14,7 @@ namespace BlindChatCore.Model
         Group GetGroup(Guid groupId);
         List<Participant> GetParticipants();
         Participant GetParticipant(int invitationCode);
-        void SetBlindedCertificate(int participantId, Guid? groupId, string blindedCertificate);
+        void AddBlindedCertificate(int participantId, Guid? groupId, string blindedCertificate);
         void MarkParticipantEmailUsed(int participantId);
         List<MessageToSign> GetBlindCertificatesToSign(Guid groupId);
         void SaveSignedCertificates(Guid groupId, List<SignedMessage> signedMessages);
@@ -22,5 +22,9 @@ namespace BlindChatCore.Model
         void SaveMessage(VerifiedParticipant participant, ParticipantMessage message);
         Group GetGroupForInvitationCode(int invitationCode);
         void SaveClientCertificate(VerifiedParticipant verifiedParticipant, Guid groupId, string email);
+        bool HasBlindCertificate(int invitationCode);
+        List<Participant> UnconfirmedParticipants();
+        void InsertBlindParticipant(Guid groupId, string publicKey, string signature);
+        List<VerifiedParticipant> GetBlindParticipants(Guid groupId);
     }
 }

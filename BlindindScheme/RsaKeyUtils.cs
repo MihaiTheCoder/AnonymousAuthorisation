@@ -48,7 +48,7 @@ namespace BlindindScheme
 
         public static RsaKeyParameters GetDeserializedKPublicKey(string serializedPublicKey)
         {
-            RsaKeyParameters publicKey = (RsaKeyParameters)PublicKeyFactory.CreateKey(Convert.FromBase64String(serializedPublicKey));
+             RsaKeyParameters publicKey = (RsaKeyParameters)PublicKeyFactory.CreateKey(Convert.FromBase64String(serializedPublicKey));
             return publicKey;
         }
 

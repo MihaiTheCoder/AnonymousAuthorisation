@@ -1,4 +1,6 @@
-﻿namespace BlindChatCore
+﻿using Org.BouncyCastle.Crypto.Parameters;
+
+namespace BlindChatCore
 {
     public class VerifiedParticipant
     {

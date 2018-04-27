@@ -18,7 +18,6 @@ namespace BlindChatCore.Model
             this.blindSigner = blindSigner;
         }
 
-
         public void RegisterGroup(Group group)
         {
             server.CreateGroup(group);
@@ -55,5 +54,9 @@ namespace BlindChatCore.Model
             return Convert.ToBase64String(message);
         }
 
+        public List<VerifiedParticipant> GetBlindParticipants(Guid groupId)
+        {
+            return server.GetBlindParticipants(groupId);
+        }
     }
 }

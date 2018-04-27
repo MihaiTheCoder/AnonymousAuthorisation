@@ -18,7 +18,10 @@ namespace BlindChatCore.Model
         void SaveSignedMessages(Guid groupId, List<SignedMessage> signedMessages);
         Group GetGroup(int invitationCode);
         SignedMessage GetSignedMessage(Guid groupId, string email);
+        List<Participant> GetParticipantsToConfirm();
 
         void AddMessage(Guid groupId, ParticipantMessage message, VerifiedParticipant participant);
+        void AddNewBlindParticipant(Guid groupId, string publicKey, string signature);
+        List<VerifiedParticipant> GetBlindParticipants(Guid groupId);
     }
 }

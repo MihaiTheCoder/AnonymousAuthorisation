@@ -1,6 +1,7 @@
 ﻿using BlindindScheme;
 using BlindindScheme.SignatureRequester;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities.Encoders;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -48,6 +49,8 @@ namespace BlindChatCore.Model
             VerifiedParticipant verifiedParticipant = new VerifiedParticipant();
             verifiedParticipant.PublicKey = RsaKeyUtils.GetSerializedPublicKey(groupRegistration.PublicKey);
             verifiedParticipant.Signature = GetSignature(groupRegistration, signedMessage);
+
+
             return verifiedParticipant;
         }
 
@@ -71,6 +74,16 @@ namespace BlindChatCore.Model
             byte[] message = Convert.FromBase64String(RsaKeyUtils.GetSerializedPublicKey(participantPublicKey));
             byte[] blindedMessage = contentBlinder.GetBlindedContent(message);
             return Convert.ToBase64String(blindedMessage);
+        }
+
+        public List<Participant> GetUnconfirmedParticipants()
+        {
+            return server.GetParticipantsToConfirm();
+        }
+
+        public void AddBlindParticipant(Guid groupId, VerifiedParticipant verifiedParticipant)
+        {
+            server.AddNewBlindParticipant(groupId, verifiedParticipant.PublicKey, verifiedParticipant.Signature);
         }
     }
 }

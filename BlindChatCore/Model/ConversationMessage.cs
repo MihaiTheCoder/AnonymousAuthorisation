@@ -13,13 +13,9 @@ namespace BlindChatCore.Model
 
         public string Message { get; set; }
 
-        [ForeignKey("ParticipantId")]
-        public int? ParticipantId { get; set; }
-
         [ForeignKey("GroupId")]
         public Guid? GroupId { get; set; }
 
-        public virtual Participant Participant { get; set; }
         public virtual Group Group { get; set; }
     }
 }
