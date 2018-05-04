@@ -57,6 +57,13 @@ namespace BlindChatCore.Model
             return group;
         }
 
+        public Group GetGroupByName(string groupName)
+        {
+            var group = context.Groups.FirstOrDefault(g => g.Name == groupName);
+
+            return group;
+        }
+
         public Group GetGroupForInvitationCode(int invitationCode)
         {
             var participant = context.Participants.FirstOrDefault(p => p.InvitationCode == invitationCode);
@@ -164,7 +171,7 @@ namespace BlindChatCore.Model
             var conversationMessage = new ConversationMessage
             {
                 GroupId = blindParticipant.GroupId,
-                Message = message.Message
+                Message = message.BlindParticipant + "-" + message.Message
             };
             context.ConversationMessages.Add(conversationMessage);
             context.SaveChanges();
@@ -210,10 +217,11 @@ namespace BlindChatCore.Model
             }
         }
 
-        public List<Participant> UnconfirmedParticipants()
+        public List<Participant> UnconfirmedParticipants(string groupName)
         {
+            var group = context.Groups.FirstOrDefault(g => g.Name == groupName);
             List<Participant> list = new List<Participant>();
-            var participants = context.Participants.Where(p => p.EmailIsConfirmed == false);
+            var participants = context.Participants.Where(p => p.EmailIsConfirmed == false && p.GroupId == group.Id);
             foreach (var participant in participants)
             {
                 list.Add(participant);
@@ -221,13 +229,14 @@ namespace BlindChatCore.Model
             return list;
         }
 
-        public void InsertBlindParticipant(Guid groupId, string publicKey, string signature)
+        public void InsertBlindParticipant(Guid groupId, string publicKey, string signature, string nickname)
         {
             var blindParticipant = new BlindParticipant
             {
                 GroupId = groupId,
                 PublicKey = publicKey,
-                Signature = signature
+                Signature = signature,
+                NickName = nickname
             };
             context.BlindParticipants.Add(blindParticipant);
             context.SaveChanges();
@@ -245,6 +254,28 @@ namespace BlindChatCore.Model
                 list.Add(verifiedParticipant);
             }
             return list;
+        }
+
+        public Participant GetParticipantToConfirm(string groupName, string participantEmail)
+        {
+            var group = context.Groups.FirstOrDefault(g => g.Name == groupName);
+            var dbParticipant = context.Participants.FirstOrDefault(p => p.EmailIsConfirmed == false && p.GroupId == group.Id && p.Email == participantEmail);
+            Participant participant = new Participant
+            {
+                Email = dbParticipant.Email,
+                EmailIsAlreadyInvited = dbParticipant.EmailIsAlreadyInvited,
+                EmailIsConfirmed = dbParticipant.EmailIsConfirmed,
+                InvitationCode = dbParticipant.InvitationCode,
+                GroupId = dbParticipant.GroupId
+            };
+
+            return participant;
+        }
+
+        public BlindParticipant GetBlindParticipantByContent(Guid id, string nickname)
+        {
+            var blindparticipant = context.BlindParticipants.FirstOrDefault(b => b.GroupId == id && b.NickName == nickname);
+            return blindparticipant;
         }
     }
 }

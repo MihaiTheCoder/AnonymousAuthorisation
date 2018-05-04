@@ -7,6 +7,7 @@ using System.Linq;
 using BlindindScheme.SignatureRequester;
 using BlindindScheme;
 using Org.BouncyCastle.Crypto;
+using System.IO;
 
 namespace BlindChatCore.Model
 {
@@ -113,9 +114,12 @@ namespace BlindChatCore.Model
         {
             var groupDetails = groupRepository.GetGroup(groupId);
 
+            var groupPubKey = File.ReadAllText(groupDetails.Name + "PublicKey.txt");
+            var rsaPubKey = RsaKeyUtils.GetDeserializedKPublicKey(groupPubKey);
+
             SignedEntity signedEntity = new SignedEntity(FromBase64String(participant.PublicKey), FromBase64String(participant.Signature));
 
-            bool isVerified = signatureVerifier.Verify(signedEntity, groupDetails.RsaPublicKey);
+            bool isVerified = signatureVerifier.Verify(signedEntity, rsaPubKey);
 
             if (isVerified)
                 groupRepository.SaveMessage(participant, message);
@@ -137,19 +141,34 @@ namespace BlindChatCore.Model
             return groupRepository.HasBlindCertificate(invitationCode);
         }
 
-        public List<Participant> GetParticipantsToConfirm()
+        public void AddNewBlindParticipant(Guid groupId, string publicKey, string signature, string nickname)
         {
-            return groupRepository.UnconfirmedParticipants();
-        }
-
-        public void AddNewBlindParticipant(Guid groupId, string publicKey, string signature)
-        {
-            groupRepository.InsertBlindParticipant(groupId, publicKey, signature);
+            groupRepository.InsertBlindParticipant(groupId, publicKey, signature, nickname);
         }
 
         public List<VerifiedParticipant> GetBlindParticipants(Guid groupId)
         {
             return groupRepository.GetBlindParticipants(groupId);
+        }
+
+        public List<Participant> GetParticipantsToConfirm(string groupName)
+        {
+            return groupRepository.UnconfirmedParticipants(groupName);
+        }
+
+        public Participant GetParticipantToConfirm(string groupName, string participantEmail)
+        {
+            return groupRepository.GetParticipantToConfirm(groupName, participantEmail);
+        }
+
+        public Group GetGroupByName(string groupName)
+        {
+            return groupRepository.GetGroupByName(groupName);
+        }
+
+        public BlindParticipant GetBlindParticipantByContent(Guid id, string nickname)
+        {
+            return groupRepository.GetBlindParticipantByContent(id, nickname);
         }
     }
 }

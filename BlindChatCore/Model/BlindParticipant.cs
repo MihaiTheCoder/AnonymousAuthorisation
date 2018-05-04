@@ -18,6 +18,8 @@ namespace BlindChatCore.Model
 
         public string Signature { get; set; }
 
+        public string NickName { get; set; }
+
         public virtual Group Group { get; set; }
     }
 }

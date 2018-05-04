@@ -23,7 +23,7 @@ namespace BlindChatCore.Model
         public GroupRegistration GetGroupRegistration(int invitationCode, RsaKeyParameters participantPublicKey)
         {
             var group = server.GetGroup(invitationCode);
-            return new GroupRegistration(group, new ContentBlinder(group.RsaPublicKey), participantPublicKey);
+            return new GroupRegistration(group, new ContentBlinder(group.RsaPublicKey, group.Name), participantPublicKey);
         }
 
         public RsaKeyParameters GetGroupDetails(int invitationCode)
@@ -76,14 +76,14 @@ namespace BlindChatCore.Model
             return Convert.ToBase64String(blindedMessage);
         }
 
-        public List<Participant> GetUnconfirmedParticipants()
+        public List<Participant> GetUnconfirmedParticipants(string groupName)
         {
-            return server.GetParticipantsToConfirm();
+            return server.GetParticipantsToConfirm(groupName);
         }
 
-        public void AddBlindParticipant(Guid groupId, VerifiedParticipant verifiedParticipant)
+        public void AddBlindParticipant(Guid groupId, VerifiedParticipant verifiedParticipant, string nickname)
         {
-            server.AddNewBlindParticipant(groupId, verifiedParticipant.PublicKey, verifiedParticipant.Signature);
+            server.AddNewBlindParticipant(groupId, verifiedParticipant.PublicKey, verifiedParticipant.Signature, nickname);
         }
     }
 }

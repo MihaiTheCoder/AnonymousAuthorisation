@@ -23,8 +23,11 @@ namespace BlindChatCore.Model
         Group GetGroupForInvitationCode(int invitationCode);
         void SaveClientCertificate(VerifiedParticipant verifiedParticipant, Guid groupId, string email);
         bool HasBlindCertificate(int invitationCode);
-        List<Participant> UnconfirmedParticipants();
-        void InsertBlindParticipant(Guid groupId, string publicKey, string signature);
+        List<Participant> UnconfirmedParticipants(string groupName);
+        void InsertBlindParticipant(Guid groupId, string publicKey, string signature, string nickname);
         List<VerifiedParticipant> GetBlindParticipants(Guid groupId);
+        Participant GetParticipantToConfirm(string groupName, string participantEmail);
+        Group GetGroupByName(string groupName);
+        BlindParticipant GetBlindParticipantByContent(Guid id, string nickname);
     }
 }

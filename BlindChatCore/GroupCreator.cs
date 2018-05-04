@@ -58,5 +58,25 @@ namespace BlindChatCore.Model
         {
             return server.GetBlindParticipants(groupId);
         }
+
+        public List<Participant> UnconfirmedInvitedParticipants(string groupName)
+        {
+            return server.GetParticipantsToConfirm(groupName);
+        }
+
+        public Participant GetParticipantToConfirm(string groupName, string participantEmail)
+        {
+            return server.GetParticipantToConfirm(groupName, participantEmail);
+        }
+
+        public Group GetGroup(int invitationCode)
+        {
+            return server.GetGroup(invitationCode);
+        }
+
+        public BlindParticipant GetBlindParticipantByNickname(Guid id, string nickname)
+        {
+            return server.GetBlindParticipantByContent(id, nickname);
+        }
     }
 }

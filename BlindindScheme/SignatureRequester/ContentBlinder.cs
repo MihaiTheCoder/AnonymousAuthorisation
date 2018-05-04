@@ -7,6 +7,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace BlindindScheme.SignatureRequester
@@ -15,12 +16,23 @@ namespace BlindindScheme.SignatureRequester
     {
         private readonly RsaBlindingParameters blindingParams;
 
-        public ContentBlinder(RsaKeyParameters publicKey)
+        public ContentBlinder(RsaKeyParameters publicKey, string groupName)
         {
             RsaBlindingFactorGenerator blindingFactorGenerator = new RsaBlindingFactorGenerator();
             blindingFactorGenerator.Init(publicKey);
             BigInteger blindingFactor = blindingFactorGenerator.GenerateBlindingFactor();
-            blindingParams = new RsaBlindingParameters(publicKey, blindingFactor);            
+            blindingParams = new RsaBlindingParameters(publicKey, blindingFactor);
+            SaveBlindFactor(groupName, blindingFactor);
+        }
+
+        public ContentBlinder(RsaKeyParameters publicKey,BigInteger blindingFactor)
+        {
+            blindingParams = new RsaBlindingParameters(publicKey, blindingFactor);
+        }
+
+        public void SaveBlindFactor(string  groupName,BigInteger blindingFactor)
+        {
+            File.WriteAllText("BlindFactor.txt", blindingFactor.ToString());
         }
 
         public byte[] GetBlindedContent(byte[] content)

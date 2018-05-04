@@ -11,9 +11,10 @@ using System;
 namespace BlindChat.Infrastructure.Migrations
 {
     [DbContext(typeof(BlindChatDbContext))]
-    partial class BlindChatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180504122254_add nickname to blind participant")]
+    partial class addnicknametoblindparticipant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

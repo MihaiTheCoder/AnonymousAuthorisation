@@ -24,7 +24,7 @@ namespace ClientApp
             APIServer server = new APIServer(groupRepository, emailSender, rngGenerator, signatureVerifier);
 
             //Set participants
-            List<Participant> unconfirmedParticipants = server.GetParticipantsToConfirm();
+            List<Participant> unconfirmedParticipants = server.GetParticipantsToConfirm("Loazarii");
             foreach(var participant in unconfirmedParticipants)
             {
                 int invitationCode = participant.InvitationCode;
@@ -47,7 +47,7 @@ namespace ClientApp
                 var content = RsaKeyUtils.Combine(publicSerializedKey, privateSerializedKey);               
 
                 //Generate blind content
-                ContentBlinder contentBlinder = new ContentBlinder((RsaKeyParameters)groupPublicKey);
+                ContentBlinder contentBlinder = new ContentBlinder((RsaKeyParameters)groupPublicKey, "Loazarii");
                 var blindedContent = contentBlinder.GetBlindedContent(content);
                 var groupRegistration = clientParticipant.GetGroupRegistration(invitationCode,(RsaKeyParameters)participantKeys.Public);
 
